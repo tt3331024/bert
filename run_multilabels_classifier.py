@@ -804,6 +804,7 @@ def input_fn_builder(features, seq_length, is_training, drop_remainder):
         batch_size = params["batch_size"]
 
         num_examples = len(features)
+        num_label = len(features[0].label_id) # 計算 label 長度
 
         # This is for demo purposes and does NOT scale to large data sets. We do
         # not use Dataset.from_generator() because that uses tf.py_func which is
@@ -824,7 +825,8 @@ def input_fn_builder(features, seq_length, is_training, drop_remainder):
                     shape=[num_examples, seq_length],
                     dtype=tf.int32),
             "label_ids":
-                tf.constant(all_label_ids, shape=[num_examples], dtype=tf.int32),
+                # 加上 label 的長度做為第二維度
+                tf.constant(all_label_ids, shape=[num_examples, num_label], dtype=tf.int32),
         })
 
         if is_training:
